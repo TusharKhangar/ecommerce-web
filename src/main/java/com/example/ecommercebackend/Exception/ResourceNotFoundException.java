@@ -1,2 +1,11 @@
-package com.example.ecommercebackend.Exception;public class ResourceNotFoundException {
+package com.example.ecommercebackend.Exception;
+
+public class ResourceNotFoundException extends RuntimeException{
+
+    public ResourceNotFoundException() {
+        super();
+    }
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
 }

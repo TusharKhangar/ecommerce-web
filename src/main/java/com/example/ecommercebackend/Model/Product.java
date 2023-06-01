@@ -1,51 +1,49 @@
-package Model;
+package com.example.ecommercebackend.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
-@Table(name = "product")
 public class Product {
+
+//    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_category_id")
+    private Category category;
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int product_id;
+    private int productId;
 
-    @Column(nullable = false)
     private String product_name;
 
     @Column(nullable = false)
     private double product_price;
 
-    @Column(nullable = false)
     private boolean stock;
 
-    @Column(nullable = false)
     private boolean live;
 
-    @Column(nullable = false)
     private String product_imageName;
 
-    @Column(nullable = false)
     private String product_description;
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "product_id=" + product_id +
-                ", product_name='" + product_name + '\'' +
-                ", product_price=" + product_price +
-                ", stock=" + stock +
-                ", live=" + live +
-                ", product_imageName='" + product_imageName + '\'' +
-                ", product_description='" + product_description + '\'' +
-                '}';
-    }
+    private int product_quantity;
+
+    //
+
 }
