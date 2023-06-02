@@ -31,7 +31,6 @@ public class Product {
 
     private String product_name;
 
-    @Column(nullable = false)
     private double product_price;
 
     private boolean stock;
