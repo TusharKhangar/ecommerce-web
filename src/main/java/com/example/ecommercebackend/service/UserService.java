@@ -6,6 +6,7 @@ import com.example.ecommercebackend.Repository.UserRepository;
 import com.example.ecommercebackend.payload.UserDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +17,21 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private ModelMapper mapper;
 
     //userDto to user then saving it into the database
     //after that we are returning the userDto
     public UserDto createUser(UserDto userDto){
         User map = mapper.map(userDto, User.class);
+        //getting passowrd
+        String pass = map.getPassword();
+        //encoding password
+        String encode = this.passwordEncoder.encode(pass);
+        System.out.println(encode + "encode");
+        map.setPassword(encode);
+
         User save = userRepository.save(map);
         return mapper.map(save, UserDto.class);
     }
