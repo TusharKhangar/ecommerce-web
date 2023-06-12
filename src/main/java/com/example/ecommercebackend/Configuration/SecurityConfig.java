@@ -2,16 +2,14 @@ package com.example.ecommercebackend.Configuration;
 
 import com.example.ecommercebackend.Security.JwtAuthenticationEntryPoint;
 import com.example.ecommercebackend.Security.JwtAuthenticationFilter;
-import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,14 +23,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig{
 
     @Autowired
     private CustomUserDetailService customUserDetailsService;
+
     public static String[] PUBLIC_URL= {"/auth/login"};
 
     @Autowired
@@ -48,10 +46,10 @@ public class SecurityConfig{
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(entryPoint))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((authorize) -> authorize.requestMatchers(PUBLIC_URL)
-            .permitAll().anyRequest().authenticated());
+            .permitAll().anyRequest().authenticated())
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(entryPoint))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         //removed http basic due to involvement of jwtAuthentication
         //we have to use lambda function for this
 
@@ -93,13 +91,13 @@ public class SecurityConfig{
         configuration.setAllowCredentials(true);
         configuration.addAllowedOriginPattern("*");
         configuration.addAllowedHeader("Authorization");
-        configuration.addAllowedHeader("Context-type");
+        configuration.addAllowedHeader("Context-Type");
         configuration.addAllowedHeader("Accept");
-        configuration.addAllowedHeader("POST");
-        configuration.addAllowedHeader("PUT");
-        configuration.addAllowedHeader("GET");
-        configuration.addAllowedHeader("DELETE");
-        configuration.addAllowedHeader("OPTIONS");
+        configuration.addAllowedMethod("POST");
+        configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("PUT");
+        configuration.addAllowedMethod("DELETE");
+        configuration.addAllowedMethod("OPTIONS");
         configuration.setMaxAge(3600L);
         source.registerCorsConfiguration("/**",configuration);
         FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));

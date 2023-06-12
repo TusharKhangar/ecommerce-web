@@ -14,7 +14,7 @@ import java.util.function.Function;
 @Component
 public class JwtHelper {
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
-    private String secret  = "jwtTokenKey";
+    private final String secret  = "jwtTokenKey";
 
     //retrieve user name from jwt token
     public String getUsername(String token){
@@ -44,8 +44,13 @@ public class JwtHelper {
         return Jwts.builder().setClaims(claims).setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-                .signWith(SignatureAlgorithm.HS256, secret).compact()
-                ;
+                .signWith(SignatureAlgorithm.HS512, secret).compact();
+    }
+
+    //validate Token
+    public Boolean validateToken(String token , UserDetails userDetails) {
+        final String username = getUsername(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims,T> claimsResolver) {
@@ -56,12 +61,6 @@ public class JwtHelper {
     private Claims getAllClaimFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
-    }
-
-    //validate Token
-    public Boolean validateToken(String token , UserDetails userDetails) {
-        final String username = getUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
 }
